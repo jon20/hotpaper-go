@@ -1,0 +1,5 @@
+package hotpepper
+
+func GourmetSearch() {
+
+}
