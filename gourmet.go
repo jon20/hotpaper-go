@@ -562,13 +562,12 @@ func WithFormat(format string) Option {
 
 func (cli Client) GourmetSearch(opts ...Option) error {
 	c := new(Gourmet)
-	for index, opt := range opts {
+	for _, opt := range opts {
 		if err := opt(c); err != nil {
 			return err
 		}
-		fmt.Println(index)
-		fmt.Println(opt)
 	}
+	fmt.Println(c.ID)
 	req, err := http.NewRequest("GET", cli.baseURL, nil)
 	if err != nil {
 		return err
