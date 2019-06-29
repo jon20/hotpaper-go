@@ -571,14 +571,31 @@ func (cli Client) newGourmetRequest(gourmet *Gourmet) error {
 	//t := reflect.ValueOf(gourmet).Elem()
 	//typeOfT := t.Type()
 
-	rt, _ := reflect.TypeOf(*gourmet), reflect.ValueOf(*gourmet)
+	rt, rv := reflect.TypeOf(*gourmet), reflect.ValueOf(*gourmet)
 	for i := 0; i < rt.NumField(); i++ {
+		value := rv.Field(i).Interface()
+		switch v := value.(type) {
+		case int:
+			if v == 0 {
+				continue
+			}
+			fmt.Printf("[Value] %d\n\n", rv.Field(i).Interface())
+		case string:
+			if v == "" || value == "0" {
+				continue
+			}
+			fmt.Printf("[Value] %s\n\n", rv.Field(i).Interface())
+		case float64:
+			if v == 0.0 {
+				continue
+			}
+		}
 		f := rt.Field(i)
 		fmt.Println(f.Tag.Get("param"))
-		//fmt.Printf("[Value] %s\n\n", rv.Field(i).Interface())
 	}
 	q.Add("key", cli.token)
 	q.Add("large_area", "Z011")
+	fmt.Println("-------------------")
 	return nil
 }
 func (cli Client) GourmetSearch(opts ...Option) error {
