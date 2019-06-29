@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 )
 
 type Hotpaper struct {
@@ -124,68 +125,68 @@ type Coupon_urls struct {
 type Option func(*Gourmet) error
 
 type Gourmet struct {
-	ID                int
-	Name              string
-	NameKana          string
-	NameAny           string
-	Tel               string
-	Address           string
-	Special           string
-	SpecialOR         string
-	SpecialCategory   string
-	SpecialCategoryOR string
-	LargeServiceArea  string
-	ServiceArea       string
-	LargeArea         string
-	MiddleArea        string
-	SmallArea         string
-	Keyword           string
-	Lat               float64
-	Lng               float64
-	Range             int
-	Datum             string
-	KtaiCoupon        int
-	Genre             int
-	Budget            string
-	PartyCapacity     int
-	Wifi              int
-	Wedding           int
-	Course            int
-	Free_drink        int
-	Free_food         int
-	Private_room      int
-	Horigotatsu       int
-	Tatami            int
-	Cocktail          int
-	Shochu            int
-	Sake              int
-	Wine              int
-	Card              int
-	Non_smoking       int
-	Charter           int
-	Ktai              int
-	Parking           int
-	Barrier_free      int
-	Sommelier         int
-	Night_view        int
-	Open_air          int
-	Show              int
-	Equipment         int
-	Karaoke           int
-	Band              int
-	Tv                int
-	Lunch             int
-	Midnight          int
-	Midnight_meal     int
-	English           int
-	Pet               int
-	Child             int
-	Credit_card       []string
-	Type              string
-	Order             int
-	Start             int
-	Count             int
-	Format            string
+	ID                int      `param:"id"`
+	Name              string   `param:"name"`
+	NameKana          string   `param:"name_kana"`
+	NameAny           string   `param:"name_any"`
+	Tel               string   `param:"tel"`
+	Address           string   `param:"address"`
+	Special           string   `param:"special"`
+	SpecialOR         string   `param:"special_or"`
+	SpecialCategory   string   `param:"special_category`
+	SpecialCategoryOR string   `param:"special_category_or`
+	LargeServiceArea  string   `param:"large_service_area"`
+	ServiceArea       string   `param:"service_area"`
+	LargeArea         string   `param:"large_area"`
+	MiddleArea        string   `param:"middle_area"`
+	SmallArea         string   `param:"small_area"`
+	Keyword           string   `param:"keyword"`
+	Lat               float64  `param:"lat"`
+	Lng               float64  `param:"lng"`
+	Range             int      `param:"range"`
+	Datum             string   `param:"datum"`
+	KtaiCoupon        int      `param:"ktai_coupon"`
+	Genre             int      `param:"genre"`
+	Budget            string   `param:"budget"`
+	PartyCapacity     int      `param:"party_capacity"`
+	Wifi              int      `param:"wifi"`
+	Wedding           int      `param:"wedding"`
+	Course            int      `param:"course"`
+	Free_drink        int      `param:"free_drink"`
+	Free_food         int      `param:"free_food"`
+	Private_room      int      `param:"private_room"`
+	Horigotatsu       int      `param:"horigotatsu"`
+	Tatami            int      `param:"tatami"`
+	Cocktail          int      `param:"cocktail"`
+	Shochu            int      `param:"shochu"`
+	Sake              int      `param:"sake"`
+	Wine              int      `param:"wine"`
+	Card              int      `param:"card"`
+	Non_smoking       int      `param:"non_smoking"`
+	Charter           int      `param:"charter"`
+	Ktai              int      `param:"ktai"`
+	Parking           int      `param:"parking"`
+	Barrier_free      int      `param:"barrier_free"`
+	Sommelier         int      `param:"sommelier"`
+	Night_view        int      `param:"night_view"`
+	Open_air          int      `param:"open_air"`
+	Show              int      `param:"show"`
+	Equipment         int      `param:"equipment"`
+	Karaoke           int      `param:"karaoke"`
+	Band              int      `param:"band"`
+	Tv                int      `param:"tv"`
+	Lunch             int      `param:"lunch"`
+	Midnight          int      `param:"midnight"`
+	Midnight_meal     int      `param:"midnight_meal"`
+	English           int      `param:"english"`
+	Pet               int      `param:"pet"`
+	Child             int      `param:"child"`
+	Credit_card       []string `param:"credit_card"`
+	Type              string   `param:"type"`
+	Order             int      `param:"order"`
+	Start             int      `param:"start"`
+	Count             int      `param:"count"`
+	Format            string   `param:"format"`
 }
 
 func WithID(id int) Option {
@@ -559,7 +560,27 @@ func WithFormat(format string) Option {
 		return nil
 	}
 }
+func (cli Client) newGourmetRequest(gourmet *Gourmet) error {
+	req, err := http.NewRequest("GET", cli.baseURL, nil)
+	if err != nil {
+		return err
+	}
+	q := req.URL.Query()
+	//v := reflect.Indirect(reflect.ValueOf(gourmet))
+	//t := v.Type()
+	//t := reflect.ValueOf(gourmet).Elem()
+	//typeOfT := t.Type()
 
+	rt, _ := reflect.TypeOf(*gourmet), reflect.ValueOf(*gourmet)
+	for i := 0; i < rt.NumField(); i++ {
+		f := rt.Field(i)
+		fmt.Println(f.Tag.Get("param"))
+		//fmt.Printf("[Value] %s\n\n", rv.Field(i).Interface())
+	}
+	q.Add("key", cli.token)
+	q.Add("large_area", "Z011")
+	return nil
+}
 func (cli Client) GourmetSearch(opts ...Option) error {
 	c := new(Gourmet)
 	for _, opt := range opts {
@@ -567,7 +588,7 @@ func (cli Client) GourmetSearch(opts ...Option) error {
 			return err
 		}
 	}
-	fmt.Println(c.ID)
+	cli.newGourmetRequest(c)
 	req, err := http.NewRequest("GET", cli.baseURL, nil)
 	if err != nil {
 		return err
