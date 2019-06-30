@@ -1,17 +1,18 @@
 package hotpepper
 
 const (
-	APIURL = ""
+	APIURL = "http://webservice.recruit.co.jp/hotpepper/gourmet/v1/"
 )
 
 type Client struct {
-	token string
-	host  string
+	token   string
+	baseURL string
 }
 
 func New(token string) *Client {
 	s := &Client{
-		token: token,
+		token:   token,
+		baseURL: APIURL,
 	}
 	return s
 }
