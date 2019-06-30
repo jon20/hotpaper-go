@@ -574,28 +574,39 @@ func (cli Client) newGourmetRequest(gourmet *Gourmet) error {
 	rt, rv := reflect.TypeOf(*gourmet), reflect.ValueOf(*gourmet)
 	for i := 0; i < rt.NumField(); i++ {
 		value := rv.Field(i).Interface()
+		f := rt.Field(i)
 		switch v := value.(type) {
 		case int:
 			if v == 0 {
 				continue
 			}
-			fmt.Printf("[Value] %d\n\n", rv.Field(i).Interface())
+			//param := strconv.Itoa(value.(int))
+			param := rv.Field(i).String()
+			q.Add(param, f.Tag.Get("param"))
 		case string:
 			if v == "" || value == "0" {
 				continue
 			}
-			fmt.Printf("[Value] %s\n\n", rv.Field(i).Interface())
+			fmt.Println(rv.Field(i).String())
+			param := rv.Field(i).String()
+			q.Add(param, f.Tag.Get("param"))
 		case float64:
 			if v == 0.0 {
 				continue
 			}
+			fmt.Println(value.(float64))
+			//param := value.(float64)
+			param := rv.Field(i).String()
+			q.Add(param, f.Tag.Get("param"))
+		case []string:
+			if len(v) == 0 {
+				continue
+			}
 		}
-		f := rt.Field(i)
-		fmt.Println(f.Tag.Get("param"))
 	}
-	q.Add("key", cli.token)
-	q.Add("large_area", "Z011")
-	fmt.Println("-------------------")
+
+	req.URL.RawQuery = q.Encode()
+	fmt.Println(req.URL.String())
 	return nil
 }
 func (cli Client) GourmetSearch(opts ...Option) error {
