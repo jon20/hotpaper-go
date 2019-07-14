@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"reflect"
+	"strconv"
 )
 
 type Hotpaper struct {
@@ -580,24 +581,23 @@ func (cli Client) newGourmetRequest(gourmet *Gourmet) error {
 			if v == 0 {
 				continue
 			}
-			//param := strconv.Itoa(value.(int))
-			param := rv.Field(i).String()
-			q.Add(param, f.Tag.Get("param"))
+			param := strconv.Itoa(value.(int))
+			q.Add(f.Tag.Get("param"), param)
 		case string:
 			if v == "" || value == "0" {
 				continue
 			}
 			fmt.Println(rv.Field(i).String())
 			param := rv.Field(i).String()
-			q.Add(param, f.Tag.Get("param"))
+			q.Add(f.Tag.Get("param"), param)
 		case float64:
 			if v == 0.0 {
 				continue
 			}
 			fmt.Println(value.(float64))
-			//param := value.(float64)
-			param := rv.Field(i).String()
-			q.Add(param, f.Tag.Get("param"))
+			param := value.(float64)
+			convstr := fmt.Sprintf("%f", param)
+			q.Add(f.Tag.Get("param"), convstr)
 		case []string:
 			if len(v) == 0 {
 				continue
@@ -607,6 +607,7 @@ func (cli Client) newGourmetRequest(gourmet *Gourmet) error {
 
 	req.URL.RawQuery = q.Encode()
 	fmt.Println(req.URL.String())
+	fmt.Println("----")
 	return nil
 }
 func (cli Client) GourmetSearch(opts ...Option) error {
