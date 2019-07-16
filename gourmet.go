@@ -572,6 +572,7 @@ func (cli Client) newGourmetRequest(gourmet *Gourmet) error {
 	//t := reflect.ValueOf(gourmet).Elem()
 	//typeOfT := t.Type()
 
+	q.Add("key", cli.token)
 	rt, rv := reflect.TypeOf(*gourmet), reflect.ValueOf(*gourmet)
 	for i := 0; i < rt.NumField(); i++ {
 		value := rv.Field(i).Interface()
@@ -587,14 +588,12 @@ func (cli Client) newGourmetRequest(gourmet *Gourmet) error {
 			if v == "" || value == "0" {
 				continue
 			}
-			fmt.Println(rv.Field(i).String())
 			param := rv.Field(i).String()
 			q.Add(f.Tag.Get("param"), param)
 		case float64:
 			if v == 0.0 {
 				continue
 			}
-			fmt.Println(value.(float64))
 			param := value.(float64)
 			convstr := fmt.Sprintf("%f", param)
 			q.Add(f.Tag.Get("param"), convstr)
@@ -606,8 +605,23 @@ func (cli Client) newGourmetRequest(gourmet *Gourmet) error {
 	}
 
 	req.URL.RawQuery = q.Encode()
-	fmt.Println(req.URL.String())
-	fmt.Println("----")
+	response, err := http.Get(req.URL.String())
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+	byteArray, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
+	data := new(Hotpaper)
+	err = xml.Unmarshal(byteArray, data)
+	if err != nil {
+		return err
+	}
+	for _, item := range data.Shops {
+		fmt.Println(item.Name)
+	}
 	return nil
 }
 func (cli Client) GourmetSearch(opts ...Option) error {
