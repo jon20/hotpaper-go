@@ -634,7 +634,6 @@ func (cli Client) GourmetSearch(opts ...Option) (*Hotpaper, error) {
 	if err != nil {
 		return nil, nil
 	}
-	fmt.Println(response)
 	return response, nil
 
 }
