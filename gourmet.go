@@ -561,10 +561,10 @@ func WithFormat(format string) Option {
 		return nil
 	}
 }
-func (cli Client) newGourmetRequest(gourmet *Gourmet) error {
+func (cli Client) newGourmetRequest(gourmet *Gourmet) (*Hotpaper, error) {
 	req, err := http.NewRequest("GET", cli.baseURL, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	q := req.URL.Query()
 	//v := reflect.Indirect(reflect.ValueOf(gourmet))
@@ -607,22 +607,19 @@ func (cli Client) newGourmetRequest(gourmet *Gourmet) error {
 	req.URL.RawQuery = q.Encode()
 	response, err := http.Get(req.URL.String())
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer response.Body.Close()
 	byteArray, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	data := new(Hotpaper)
 	err = xml.Unmarshal(byteArray, data)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	for _, item := range data.Shops {
-		fmt.Println(item.Name)
-	}
-	return nil
+	return data, nil
 }
 func (cli Client) GourmetSearch(opts ...Option) error {
 	c := new(Gourmet)
