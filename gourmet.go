@@ -621,34 +621,20 @@ func (cli Client) newGourmetRequest(gourmet *Gourmet) (*Hotpaper, error) {
 	}
 	return data, nil
 }
-func (cli Client) GourmetSearch(opts ...Option) error {
+
+// GourmetSearch will returns specified list
+func (cli Client) GourmetSearch(opts ...Option) (*Hotpaper, error) {
 	c := new(Gourmet)
 	for _, opt := range opts {
 		if err := opt(c); err != nil {
-			return err
+			return nil, err
 		}
 	}
-	cli.newGourmetRequest(c)
-	req, err := http.NewRequest("GET", cli.baseURL, nil)
+	response, err := cli.newGourmetRequest(c)
 	if err != nil {
-		return err
+		return nil, nil
 	}
-	q := req.URL.Query()
-	fmt.Println(cli.token)
-	q.Add("key", cli.token)
-	q.Add("large_area", "Z011")
-	req.URL.RawQuery = q.Encode()
-	fmt.Println(req.URL.String())
-	a, _ := http.Get(req.URL.String())
-	defer a.Body.Close()
-	fmt.Println(a.Body)
-	byteArray, _ := ioutil.ReadAll(a.Body)
-	//fmt.Println(string(byteArray))
-	data := new(Hotpaper)
-	err = xml.Unmarshal(byteArray, data)
-	for _, item := range data.Shops {
-		fmt.Println(item.Coupon_urls)
-	}
-	return nil
+	fmt.Println(response)
+	return response, nil
 
 }
