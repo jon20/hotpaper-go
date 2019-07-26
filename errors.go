@@ -1,8 +1,8 @@
 package hotpepper
 
-//aa
+// Error
 const (
-	ErrorConnection = "Connection Failed"
+	ErrorConnectionFailed = "Connection Failed"
 )
 
 type errConnectionFailed struct {
