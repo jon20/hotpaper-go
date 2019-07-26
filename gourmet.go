@@ -2,6 +2,7 @@ package hotpepper
 
 import (
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -564,6 +565,7 @@ func WithFormat(format string) Option {
 func (cli Client) newGourmetRequest(gourmet *Gourmet) (*Hotpaper, error) {
 	req, err := http.NewRequest("GET", cli.baseURL, nil)
 	if err != nil {
+		err = errors.New("aa")
 		return nil, err
 	}
 	q := req.URL.Query()
@@ -607,6 +609,7 @@ func (cli Client) newGourmetRequest(gourmet *Gourmet) (*Hotpaper, error) {
 	req.URL.RawQuery = q.Encode()
 	response, err := http.Get(req.URL.String())
 	if err != nil {
+		err = errors.New(ErrorConnectionFailed)
 		return nil, err
 	}
 	defer response.Body.Close()
@@ -632,7 +635,7 @@ func (cli Client) GourmetSearch(opts ...Option) (*Hotpaper, error) {
 	}
 	response, err := cli.newGourmetRequest(c)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 	return response, nil
 
