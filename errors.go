@@ -3,6 +3,7 @@ package hotpepper
 // Error
 const (
 	ErrorConnectionFailed = "Connection Failed"
+	ErrorRequest          = "Cannnot Create Request"
 )
 
 type errConnectionFailed struct {
