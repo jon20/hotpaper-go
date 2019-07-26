@@ -565,7 +565,7 @@ func WithFormat(format string) Option {
 func (cli Client) newGourmetRequest(gourmet *Gourmet) (*Hotpaper, error) {
 	req, err := http.NewRequest("GET", cli.baseURL, nil)
 	if err != nil {
-		err = errors.New("aa")
+		err = errors.New(ErrorRequest)
 		return nil, err
 	}
 	q := req.URL.Query()
