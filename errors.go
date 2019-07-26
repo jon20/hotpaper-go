@@ -1,5 +1,10 @@
 package hotpepper
 
+//aa
+const (
+	ErrorConnection = "Connection Failed"
+)
+
 type errConnectionFailed struct {
 	host string
 }
